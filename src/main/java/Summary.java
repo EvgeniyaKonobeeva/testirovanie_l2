@@ -22,69 +22,83 @@ import java.util.Scanner;
     // ориентированное на определенную компанию или должность
  */
 public class Summary {
-    private String resourceDirectoryPath;
+    private String resourceDirectoryPath = "D:\\IdeaProjects\\pattern_game-master\\testirovanie_l2\\src\\infoFiles\\Summaries";
 
-    private String summaryFilePath;
+    private String fileName;
 
-    public Summary(String summaryFilePath){
-        this.summaryFilePath = summaryFilePath;
+    public Summary(String fileName){
+
+        this.fileName = fileName;
+        resourceDirectoryPath += "\\" + fileName;
+        File summaryDir = new File(resourceDirectoryPath);
+        if(!summaryDir.exists()){
+            try{
+                summaryDir.createNewFile();
+            }catch (IOException ioe){
+                ioe.getMessage();
+            }
+        }
     }
 
     public void writeChronologySummary(){
-        readFromFile1Line();
-        writeGoals();
-        writePersonalInfo();
-        writeWorkExperience();
-        writeEducation();
+        generateHeader();
+        writeToSummary("ЦЕЛИ: ");
+        readFromFile1Line("infoFiles\\goals");
+        writeToSummary("ЛИЧНАЯ ИНФОРМАЦИЯ: ");
+        readFromFile1Line("infoFiles\\personalData");
+        writeToSummary("ОПЫТ РАБОТЫ: ");
+        readFromFileSeveralLines("infoFiles\\workExperience", 2);
+        writeToSummary("ОБРАЗОВАНИЕ: ");
+        readFromFileSeveralLines("infoFiles\\education", 3);
 
+
+
+    }
+
+    public void generateHeader(){
+        readFromFile1Line("headerInfo\\names");
+        readFromFile1Line("headerInfo\\phones");
+        readFromFile1Line("headerInfo\\emails");
     }
 
     public void writeFunctionalSummary(){
-        readFromFile1Line();
-        writeGoals();
-        writePersonalInfo();
-        writeQualities();
-        writeAdditionalInfo();
+        generateHeader();
+        readFromFile1Line("infoFiles\\goals");
+        readFromFile1Line("infoFiles\\personalData");
+        readFromFileSeveralLines("infoFiles\\education", 3);
+        readFromFileSeveralLines("infoFiles\\qualyties", 3);
+
     }
 
     public void writeMixedSummary(){
-        readFromFile1Line();
-        writeGoals();
-        writePersonalInfo();
 
     }
 
     public void writeSubjectSummary(){
-        readFromFile1Line();
-        writeGoals();
-        writePersonalInfo();
-        writeWorkExperience();
-        writeEducation();
-        writeQualities();
     }
 
-    public void writePersonalInfo(){
+    public void readFromFileSeveralLines(String file, int numLines){
+        int lines = countLinesInFile(file);
 
-    }
+        int countLine = -1;
 
-    public void writeWorkExperience(){
+        String lineStr = "";
 
-    }
+        String path = resourceDirectoryPath + file;
+        Scanner scanner = null;
+        try{
+            scanner = new Scanner(new File(path));
+            scanner.useDelimiter(System.getProperty("line.separator"));
+            while (scanner.hasNext() || countLine != numLines) {
+                lineStr = scanner.next();
+                writeToSummary(lineStr);
+                countLine++;
+            }
 
-    public void writeEducation(){
-
-    }
-
-    public void writeAdditionalInfo(){
-
-    }
-
-    public void writeQualities(){
-
-    }
-
-    public void writeGoals(){
-
+        }catch (FileNotFoundException fileNotFoundException){
+            fileNotFoundException.getMessage();
+        }
+        scanner.close();
     }
 
     public void readFromFile1Line(String file){
@@ -101,7 +115,7 @@ public class Summary {
         try{
             scanner = new Scanner(new File(path));
             scanner.useDelimiter(System.getProperty("line.separator"));
-            while (scanner.hasNext() && lineNum != countLine){
+            while (scanner.hasNext() || lineNum != countLine){
                 lineStr = scanner.next();
                 countLine++;
             }
@@ -131,27 +145,28 @@ public class Summary {
 
     private int countLinesInFile(String fileName){
         int countLines = 0;
-        String path = resourceDirectoryPath + "//" + fileName;
-        Scanner scanner = null;
+        String path = resourceDirectoryPath + "\\" + fileName;
+
         try{
-            scanner = new Scanner(new File(path));
+            Scanner scanner = new Scanner(new File(path));
             scanner.useDelimiter(System.getProperty("line.separator"));
             while (scanner.hasNext()){
                 scanner.next();
                 countLines++;
             }
+            scanner.close();
 
         }catch (FileNotFoundException fileNotFoundException){
             fileNotFoundException.getMessage();
         }
-        scanner.close();
+
 
         return countLines;
     }
 
     private void writeToSummary(String line){
         FileWriter fileWriter;
-        File summary = new File(summaryFilePath);
+        File summary = new File(fileName);
         try{
             fileWriter = new FileWriter(summary);
             fileWriter.append(line + "\n");

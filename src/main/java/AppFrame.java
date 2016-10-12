@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by Evgenia on 28.09.2016.
@@ -45,7 +47,16 @@ public class AppFrame extends JFrame{
 
         add(buttonPanel, BorderLayout.CENTER);
         pack();
+
+
+        chronologyBut.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Summary summary = new Summary("chronologySummary1");
+                summary.writeChronologySummary();
+            }
+        });
     }
+
 
 
 }
