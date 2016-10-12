@@ -68,7 +68,7 @@ public class Summary {
         readFromFileSeveralLines(resourceDirectoryPath, "workExperience", 2);
         writeToSummary("ОБРАЗОВАНИЕ: ");
         readFromFileSeveralLines(resourceDirectoryPath,"education", 3);
-        writeToSummary("ЛИЧНЫЕ КАЧЕСТВА: \n");
+        writeToSummary("ЛИЧНЫЕ КАЧЕСТВА: ");
         readFromFileSeveralLines(resourceDirectoryPath,"qualyties", 3);
     }
 

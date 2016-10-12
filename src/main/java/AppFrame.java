@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Created by Evgenia on 28.09.2016.
@@ -30,39 +31,28 @@ public class AppFrame extends JFrame{
     private JPanel textPanel;
     private Summary summary;
     private JLabel errorLabel;
+    private JScrollPane scrollPane;
+    private JTree tree;
 
     public AppFrame(){
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(500, 500);
         setVisible(true);
 
-        errorLabel = new JLabel();
         summary = new Summary();
+//        tree = new TreeFolder()
+//        TODO создать дерево, создать filegetter, начать прогулку по дереву, настроить картинки
+//        TODO организовать показывание файла в дереве при его создании, открытие по кнопке для просмотра, отображать путь к папке по
+// TODO выбранной вершине в текстовом поле, просмотр выбранного листа
+        scrollPane = new JScrollPane(tree);
 
-        buttonPanel = new JPanel();
-        chronologyBut = new JButton("хронологическое резюме");
-        functionalBut = new JButton("функциональное");
-        mixedBut = new JButton("смешанное");
-        saveBut = new JButton("показать");
-        textField = new JTextField();
+        initButtonPanel();
+        initTextPanel();
 
-
-        textPanel = new JPanel();
-        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.PAGE_AXIS));
-        textField = new JTextField();
-        textArea = new JTextArea(30, 70);
-        textPanel.add(textField);
-        textPanel.add(errorLabel);
-        textPanel.add(textArea);
-
-
-        buttonPanel.add(chronologyBut);
-        buttonPanel.add(functionalBut);
-        buttonPanel.add(mixedBut);
-        buttonPanel.add(saveBut);
-
-        add(buttonPanel, BorderLayout.CENTER);
-        add(textPanel, BorderLayout.SOUTH);
+        initTextPanel();
+        add(scrollPane, BorderLayout.LINE_START);
+        add(buttonPanel, BorderLayout.PAGE_START);
+        add(textPanel, BorderLayout.LINE_END);
         pack();
 
 
@@ -124,6 +114,33 @@ public class AppFrame extends JFrame{
                 }
 
         }
+    }
+
+    private void initButtonPanel(){
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+
+        chronologyBut = new JButton("хронологическое резюме");
+        functionalBut = new JButton("функциональное");
+        mixedBut = new JButton("смешанное");
+        saveBut = new JButton("показать");
+        textField = new JTextField();
+
+        buttonPanel.add(chronologyBut);
+        buttonPanel.add(functionalBut);
+        buttonPanel.add(mixedBut);
+        buttonPanel.add(saveBut);
+    }
+
+    private void initTextPanel(){
+        errorLabel = new JLabel();
+        textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.PAGE_AXIS));
+        textField = new JTextField();
+        textArea = new JTextArea(30, 70);
+        textPanel.add(textField);
+        textPanel.add(errorLabel);
+        textPanel.add(textArea);
     }
 
 
