@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * Created by Evgenia on 28.09.2016.
@@ -23,40 +24,107 @@ public class AppFrame extends JFrame{
     private JButton chronologyBut; // перечисления мест работы начиная с самого последнего
     private JButton functionalBut;  // профессиональные навыки, личные качества, достижения в сфере
     private JButton mixedBut; // комбинирует и хронологическое и функциональное резюме
-    private JButton subjectBut; // ориентированное на определенную компанию или должность
     private JButton saveBut;
+    private JTextField textField;
+    private JTextArea textArea;
+    private JPanel textPanel;
+    private Summary summary;
+    private JLabel errorLabel;
 
     public AppFrame(){
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(500, 500);
         setVisible(true);
 
+        errorLabel = new JLabel();
+        summary = new Summary();
+
         buttonPanel = new JPanel();
         chronologyBut = new JButton("хронологическое резюме");
         functionalBut = new JButton("функциональное");
         mixedBut = new JButton("смешанное");
-        subjectBut = new JButton("объектное");
-        saveBut = new JButton("сохранить");
+        saveBut = new JButton("показать");
+        textField = new JTextField();
+
+
+        textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.PAGE_AXIS));
+        textField = new JTextField();
+        textArea = new JTextArea(30, 70);
+        textPanel.add(textField);
+        textPanel.add(errorLabel);
+        textPanel.add(textArea);
 
 
         buttonPanel.add(chronologyBut);
         buttonPanel.add(functionalBut);
         buttonPanel.add(mixedBut);
-        buttonPanel.add(subjectBut);
         buttonPanel.add(saveBut);
 
         add(buttonPanel, BorderLayout.CENTER);
+        add(textPanel, BorderLayout.SOUTH);
         pack();
 
 
-        chronologyBut.addActionListener(new ActionListener() {
+        chronologyBut.addActionListener(new MyListener("chronologySummary", 0));
+
+        functionalBut.addActionListener(new MyListener("functionalSummary", 1));
+
+        mixedBut.addActionListener(new MyListener("mixedSummary", 2));
+
+        saveBut.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Summary summary = new Summary("chronologySummary1");
-                summary.writeChronologySummary();
+                errorLabel.setText("");
+                summary.printFile(textArea);
             }
         });
     }
 
+
+    public boolean readPath(String path){
+        if(path.equals("")){
+            errorLabel.setText("your path is incorrect");
+            return false;
+        }else{
+            File file = new File(path);
+            if(!file.exists() || !file.isDirectory()){
+                errorLabel.setText("your path is incorrect");
+                return false;
+            }else{
+                summary.setFilePath(path);
+            }
+            return true;
+        }
+    }
+
+    public class MyListener implements ActionListener{
+        String name;
+        private int countClicks = 0;
+        int summarytypecode;
+        public MyListener(String name, int summarytypecode) {
+            this.name = name;
+            this.summarytypecode = summarytypecode;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            errorLabel.setText("");
+            textArea.setText("");
+            summary.setFileName(name + countClicks++);
+            if(readPath(textField.getText()))
+                switch(summarytypecode){
+                    case 0:
+                        summary.writeChronologySummary();
+                        break;
+                    case 1:
+                        summary.writeFunctionalSummary();
+                        break;
+                    case 2:
+                        summary.writeMixedSummary();
+                        break;
+                }
+
+        }
+    }
 
 
 }

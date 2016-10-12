@@ -2,8 +2,10 @@ group 'group'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.5
+mainClassName = "MainClass"
 
 repositories {
     mavenCentral()

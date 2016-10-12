@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -22,87 +23,82 @@ import java.util.Scanner;
     // ориентированное на определенную компанию или должность
  */
 public class Summary {
-    private String resourceDirectoryPath = "D:\\IdeaProjects\\pattern_game-master\\testirovanie_l2\\src\\infoFiles\\Summaries";
-
-    private String fileName;
-
-    public Summary(String fileName){
-
-        this.fileName = fileName;
-        resourceDirectoryPath += "\\" + fileName;
-        File summaryDir = new File(resourceDirectoryPath);
-        if(!summaryDir.exists()){
-            try{
-                summaryDir.createNewFile();
-            }catch (IOException ioe){
-                ioe.getMessage();
-            }
-        }
-    }
+    private String resourceDirectoryPath = "D:\\IdeaProjects\\testirovanie_l2\\src\\infoFiles";
+    private String usersPath;
+    private String summaryFileN;
 
     public void writeChronologySummary(){
         generateHeader();
         writeToSummary("ЦЕЛИ: ");
-        readFromFile1Line("infoFiles\\goals");
+        readFromFile1Line(resourceDirectoryPath, "goals");
         writeToSummary("ЛИЧНАЯ ИНФОРМАЦИЯ: ");
-        readFromFile1Line("infoFiles\\personalData");
+        readFromFile1Line(resourceDirectoryPath, "personalData");
         writeToSummary("ОПЫТ РАБОТЫ: ");
-        readFromFileSeveralLines("infoFiles\\workExperience", 2);
+        readFromFileSeveralLines(resourceDirectoryPath, "workExperience", 2);
         writeToSummary("ОБРАЗОВАНИЕ: ");
-        readFromFileSeveralLines("infoFiles\\education", 3);
-
-
-
+        readFromFileSeveralLines(resourceDirectoryPath, "education", 3);
     }
 
     public void generateHeader(){
-        readFromFile1Line("headerInfo\\names");
-        readFromFile1Line("headerInfo\\phones");
-        readFromFile1Line("headerInfo\\emails");
+        readFromFile1Line(resourceDirectoryPath, "headerInfo\\names");
+        readFromFile1Line(resourceDirectoryPath, "headerInfo\\phones");
+        readFromFile1Line(resourceDirectoryPath, "headerInfo\\emails");
     }
 
     public void writeFunctionalSummary(){
         generateHeader();
-        readFromFile1Line("infoFiles\\goals");
-        readFromFile1Line("infoFiles\\personalData");
-        readFromFileSeveralLines("infoFiles\\education", 3);
-        readFromFileSeveralLines("infoFiles\\qualyties", 3);
+        writeToSummary("ЦЕЛИ: ");
+        readFromFile1Line(resourceDirectoryPath, "goals");
+        writeToSummary("ЛИЧНАЯ ИНФОРМАЦИЯ: ");
+        readFromFile1Line(resourceDirectoryPath, "personalData");
+        writeToSummary("ОБРАЗОВАНИЕ: ");
+        readFromFileSeveralLines(resourceDirectoryPath, "education", 3);
+        writeToSummary("КАЧЕСТВА: ");
+        readFromFileSeveralLines(resourceDirectoryPath,"qualyties", 3);
 
     }
 
     public void writeMixedSummary(){
-
+        generateHeader();
+        writeToSummary("ЦЕЛИ: ");
+        readFromFile1Line(resourceDirectoryPath, "goals");
+        writeToSummary("ЛИЧНАЯ ИНФОРМАЦИЯ: ");
+        readFromFile1Line(resourceDirectoryPath, "personalData");
+        writeToSummary("ОПЫТ РАБОТЫ: ");
+        readFromFileSeveralLines(resourceDirectoryPath, "workExperience", 2);
+        writeToSummary("ОБРАЗОВАНИЕ: ");
+        readFromFileSeveralLines(resourceDirectoryPath,"education", 3);
+        writeToSummary("ЛИЧНЫЕ КАЧЕСТВА: \n");
+        readFromFileSeveralLines(resourceDirectoryPath,"qualyties", 3);
     }
 
-    public void writeSubjectSummary(){
-    }
-
-    public void readFromFileSeveralLines(String file, int numLines){
-        int lines = countLinesInFile(file);
+    public void readFromFileSeveralLines(String path11, String file, int numLines){
+        int lines = countLinesInFile(path11, file);
 
         int countLine = -1;
 
         String lineStr = "";
 
-        String path = resourceDirectoryPath + file;
+        String path = concatePathFile(path11, file);
         Scanner scanner = null;
         try{
             scanner = new Scanner(new File(path));
-            scanner.useDelimiter(System.getProperty("line.separator"));
-            while (scanner.hasNext() || countLine != numLines) {
+            scanner.useDelimiter("\\n");
+            while (scanner.hasNext() && countLine != numLines) {
                 lineStr = scanner.next();
                 writeToSummary(lineStr);
                 countLine++;
             }
+            scanner.close();
 
         }catch (FileNotFoundException fileNotFoundException){
-            fileNotFoundException.getMessage();
+            System.out.println(fileNotFoundException.getMessage());
         }
-        scanner.close();
+
     }
 
-    public void readFromFile1Line(String file){
-        int lines = countLinesInFile(file);
+    public String readFromFile1Line(String path11, String file){
+        int lines = countLinesInFile(path11,file);
 
         int lineNum = new Random().nextInt(lines);
 
@@ -110,46 +106,33 @@ public class Summary {
 
         String lineStr = "";
 
-        String path = resourceDirectoryPath + file;
+        String path = concatePathFile(path11, file);
         Scanner scanner = null;
         try{
             scanner = new Scanner(new File(path));
-            scanner.useDelimiter(System.getProperty("line.separator"));
-            while (scanner.hasNext() || lineNum != countLine){
+            scanner.useDelimiter("\\n");
+            while (scanner.hasNext() && lineNum != countLine){
                 lineStr = scanner.next();
                 countLine++;
             }
+            scanner.close();
             writeToSummary(lineStr);
 
+
         }catch (FileNotFoundException fileNotFoundException){
-            fileNotFoundException.getMessage();
+            System.out.println(fileNotFoundException.getMessage());
         }
-        scanner.close();
+        return lineStr;
 
     }
 
-    public void readFrom(String fileName){
-        String path = resourceDirectoryPath + "//" + fileName;
-        Scanner scanner = null;
-        try{
-            scanner = new Scanner(new File(path));
-            scanner.useDelimiter(System.getProperty("line.separator"));
-//          read file
-
-        }catch (FileNotFoundException fileNotFoundException){
-            fileNotFoundException.getMessage();
-        }
-        scanner.close();
-
-    }
-
-    private int countLinesInFile(String fileName){
+    public int countLinesInFile(String path11, String fileName){
         int countLines = 0;
-        String path = resourceDirectoryPath + "\\" + fileName;
+        String path = concatePathFile(path11, fileName);
 
         try{
             Scanner scanner = new Scanner(new File(path));
-            scanner.useDelimiter(System.getProperty("line.separator"));
+            scanner.useDelimiter("\\n");
             while (scanner.hasNext()){
                 scanner.next();
                 countLines++;
@@ -157,7 +140,7 @@ public class Summary {
             scanner.close();
 
         }catch (FileNotFoundException fileNotFoundException){
-            fileNotFoundException.getMessage();
+            System.out.println(fileNotFoundException.getMessage());
         }
 
 
@@ -165,17 +148,44 @@ public class Summary {
     }
 
     private void writeToSummary(String line){
+        String path = concatePathFile(usersPath, summaryFileN);
         FileWriter fileWriter;
-        File summary = new File(fileName);
+        File summary = new File(path);
         try{
-            fileWriter = new FileWriter(summary);
+            fileWriter = new FileWriter(summary, true);
             fileWriter.append(line + "\n");
+            fileWriter.close();
         }catch (IOException ioex){
-            ioex.getMessage();
+            System.out.println(ioex.getMessage());
         }
     }
 
-//    TODO записывая в файл послежовательно инфу вставлять оформляющие слова полей
+    private String concatePathFile(String path, String file){
+        return  path + "\\" + file;
+    }
 
+    public void setFilePath(String path){
+        usersPath = path;
+    }
+    public void setFileName(String fileName){
+        summaryFileN = fileName;
+    }
+
+    public void printFile(JTextArea textArea){
+        String path = concatePathFile(usersPath, summaryFileN);
+
+        try{
+            Scanner scanner = new Scanner(new File(path));
+            scanner.useDelimiter("\\n");
+            while (scanner.hasNext()){
+                textArea.append(scanner.next());
+            }
+            scanner.close();
+
+        }catch (FileNotFoundException fileNotFoundException){
+            System.out.println(fileNotFoundException.getMessage());
+        }
+
+    }
 
 }
